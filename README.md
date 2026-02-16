@@ -1,78 +1,61 @@
-# 🧪 NoteSync - Physics & Chemistry Notes
+# 🧪 NoteSync - Global Edition (Cloud-Powered)
 
-A beautiful web app for sharing and discovering Chemistry and Physics notes.
+This version of NoteSync uses **Supabase** (Database + Storage) and can be hosted for **FREE** on Netlify or Vercel without a credit card.
 
-## 📱 Access on Your Phone
+## 🚀 Step 1: Set up Supabase (100% Free)
 
-### Method 1: Local Network (Quick & Easy)
+1.  Go to [Supabase.com](https://supabase.com) and sign in with GitHub.
+2.  Click **New Project** and name it `notesync`. (Set a password and remember it!)
+3.  **Create the Database Table**:
+    - Go to the **SQL Editor** (left sidebar).
+    - Paste this code and click **Run**:
+      ```sql
+      create table notes (
+        id bigint primary key generated always as identity,
+        title text not null,
+        subject text not null,
+        author text,
+        date timestamptz default now(),
+        file_url text,
+        file_name text
+      );
 
-1. **Start the server** on your computer:
-   ```bash
-   cd "/Users/aari/IGCSE pooling"
-   python3 -m http.server 8080
-   ```
+      -- Allow anyone to read and write for this project
+      alter table notes enable row level security;
+      create policy "Public Access" on notes for all using (true);
+      ```
+4.  **Create the Storage Bucket**:
+    - Go to **Storage** (mailbox icon).
+    - Click **New Bucket**, name it `notes-bucket`.
+    - Set it to **Public**.
+    - Go to **Policies** (under Storage) and create a policy that allows "All" access to everyone (so users can upload/download files).
 
-2. **Find your computer's IP address**:
-   ```bash
-   ifconfig | grep "inet " | grep -v 127.0.0.1
-   ```
-   Look for something like `192.168.x.x`
+5.  **Get your Keys**:
+    - Go to **Project Settings** (gear icon) -> **API**.
+    - Copy your **Project URL** and **anon public Key**.
+    - Open `index.html` on your laptop and paste them into the `SUPABASE_URL` and `SUPABASE_ANON_KEY` variables.
 
-3. **On your phone** (connected to same WiFi):
-   - Open Safari or Chrome
-   - Go to: `http://YOUR_IP_ADDRESS:8080/index.html`
-   - Example: `http://192.168.2.146:8080/index.html`
+## 📱 Step 2: Go Live Locally
 
-4. **Install as App** (iOS):
-   - Tap the Share button
-   - Scroll down and tap "Add to Home Screen"
-   - Now it works like a real app!
-
-### Method 2: Deploy Online (Permanent Access)
-
-#### Option A: GitHub Pages (Free)
 ```bash
-# 1. Create a new GitHub repository
-# 2. Push your files
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin YOUR_REPO_URL
-git push -u origin main
-
-# 3. Enable GitHub Pages in repository settings
-# Your app will be at: https://USERNAME.github.io/REPO_NAME
+# You don't even need Python anymore! 
+# Just open index.html in your browser.
 ```
 
-#### Option B: Netlify (Easiest)
-1. Go to [netlify.com](https://netlify.com)
-2. Drag and drop your project folder
-3. Done! You get a URL like `https://your-app.netlify.app`
+## 🌍 Step 3: Go Live Globally (No Credit Card)
+
+1.  Go to [Netlify.com](https://netlify.com).
+2.  Sign in with GitHub.
+3.  Click **"Add new site"** -> **"Deploy manually"**.
+4.  **Drag and Drop** your `IGCSE pooling` folder.
+5.  **DONE.** You'll get a real URL you can send to anyone!
+
+---
 
 ## ✨ Features
-
-- 📚 Upload and share study notes (PDF, images)
-- 🔍 Filter by subject (Physics/Chemistry)
-- 💾 Offline storage using localStorage
-- 📱 Mobile-friendly responsive design
-- 🎨 Beautiful glassmorphism UI
-- ⚡ Progressive Web App (installable)
-
-## 🛠️ Tech Stack
-
-- Pure HTML, CSS, JavaScript
-- No dependencies or build process
-- Works offline after first load
-- localStorage for data persistence
-
-## 📝 Usage
-
-1. Click "Upload Notes" to add new study materials
-2. Fill in title, subject, and author
-3. Upload PDF or image files
-4. Filter notes by subject using the filter buttons
-5. Download notes by clicking the download button
+- 🔄 **Cloud Sync**: Notes stay saved even if your laptop is destroyed.
+- 📁 **Cloud Files**: PDFs and Images are stored globally.
+- 🛡️ **Admin Protection**: Deletions still require the password (`GOAT_SYNC_2026`).
 
 ---
 

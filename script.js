@@ -1,5 +1,7 @@
-// API Configuration
-const API_URL = window.location.origin; // Automatically uses the current server
+// --- Supabase Integration ---
+const supabase = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL')
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- State Management ---
@@ -18,15 +20,34 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Functions ---
 
-    // Fetch notes from server
+    // Initialize Supabase Client if possible
+    let supabaseClient = null;
+    if (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+        console.warn('⚠️ Supabase URL/Key not configured. Please check index.html');
+        // Fallback to demo mode or alert user
+    }
+
+    // Fetch notes from Supabase
     async function fetchNotes() {
+        if (!supabaseClient) {
+            console.error('Supabase client not initialized');
+            return;
+        }
+
         try {
-            const response = await fetch(`${API_URL}/api/notes`);
-            notes = await response.json();
+            const { data, error } = await supabaseClient
+                .from('notes')
+                .select('*')
+                .order('id', { ascending: false });
+
+            if (error) throw error;
+            notes = data;
             renderNotes();
         } catch (error) {
             console.error('Error fetching notes:', error);
-            showNotification('Failed to load notes. Please check your connection.', 'error');
+            showNotification('Sync failed. Check Supabase connection.', 'error');
         }
     }
 
@@ -58,21 +79,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Download Handling
     window.downloadNote = (id) => {
         const note = notes.find(n => n.id === id);
-        if (!note) return;
-
-        if (!note.fileUrl) {
-            alert('This note does not have a file attached.');
+        if (!note || !note.file_url) {
+            alert('File not found.');
             return;
         }
-
-        // Download the file
-        const link = document.createElement('a');
-        link.href = `${API_URL}${note.fileUrl}`;
-        link.download = note.fileName || `${note.title}.pdf`;
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        window.open(note.file_url, '_blank');
     };
 
     // Delete Note Handling
@@ -80,24 +91,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const password = prompt(`Enter Admin Password to delete "${title}":`);
         if (!password) return;
 
-        try {
-            const response = await fetch(`${API_URL}/api/notes/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-Admin-Password': password
-                }
-            });
-            const result = await response.json();
+        if (password !== ADMIN_PASSWORD) {
+            showNotification('Incorrect password!', 'error');
+            return;
+        }
 
-            if (result.success) {
-                showNotification(`Note "${title}" deleted.`, 'success');
-                await fetchNotes();
-            } else {
-                showNotification(result.error || 'Failed to delete note.', 'error');
-            }
+        try {
+            // 1. Delete note from database
+            const { error: dbError } = await supabaseClient
+                .from('notes')
+                .delete()
+                .eq('id', id);
+
+            if (dbError) throw dbError;
+
+            showNotification(`Note "${title}" deleted.`, 'success');
+            await fetchNotes();
         } catch (error) {
             console.error('Delete error:', error);
-            showNotification('Error connecting to server.', 'error');
+            showNotification('Failed to delete note.', 'error');
         }
     };
 
@@ -112,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             emptyState.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; grid-column: 1 / -1;';
             emptyState.innerHTML = `
                 <ion-icon name="file-tray-outline" style="font-size: 64px; color: rgba(255,255,255,0.3); margin-bottom: 16px;"></ion-icon>
-                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">No notes uploaded yet. Be the first!</p>
+                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">No notes found. Create your own!</p>
             `;
             notesGrid.appendChild(emptyState);
             return;
@@ -121,8 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         filteredNotes.forEach(note => {
             const card = document.createElement('article');
             card.className = 'note-card';
-
-            // Determine icon based on subject
             const icon = note.subject === 'chemistry' ? 'flask' : 'magnet';
             const colorClass = note.subject;
 
@@ -141,41 +151,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <span><ion-icon name="person-circle-outline"></ion-icon> ${note.author || 'Anonymous'}</span>
                     <span><ion-icon name="calendar-outline"></ion-icon> ${new Date(note.date).toLocaleDateString()}</span>
                 </div>
+                ${note.file_url ? `
                 <button class="download-btn" onclick="downloadNote(${note.id})">
                     <ion-icon name="cloud-download-outline"></ion-icon> Download Note
-                </button>
+                </button>` : ''}
             `;
-
             notesGrid.appendChild(card);
         });
     }
 
-    // --- Event Listeners ---
-
-    // Filter Logic
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            // UI Toggle
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            // Logic
-            renderNotes(btn.dataset.filter);
-        });
-    });
-
-    // Modal Logic
+    // --- Modal Logic ---
     const openModal = () => {
         uploadModal.style.display = 'flex';
         setTimeout(() => uploadModal.classList.add('active'), 10);
     };
 
     uploadBtn.addEventListener('click', openModal);
-
     const fabUpload = document.getElementById('fabUpload');
-    if (fabUpload) {
-        fabUpload.addEventListener('click', openModal);
-    }
+    if (fabUpload) fabUpload.addEventListener('click', openModal);
 
     function closeUploadModal() {
         uploadModal.classList.remove('active');
@@ -183,109 +176,84 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     closeModal.addEventListener('click', closeUploadModal);
+    window.addEventListener('click', (e) => { if (e.target === uploadModal) closeUploadModal(); });
 
-    window.addEventListener('click', (e) => {
-        if (e.target === uploadModal) closeUploadModal();
+    // Filter Logic
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderNotes(btn.dataset.filter);
+        });
     });
 
     // File Input Logic
     dropArea.addEventListener('click', () => fileInput.click());
-
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', () => {
         if (fileInput.files.length > 0) {
             fileNameDisplay.textContent = fileInput.files[0].name;
             dropArea.style.borderColor = '#8b5cf6';
-            dropArea.style.background = 'rgba(139, 92, 246, 0.1)';
-        }
-    });
-
-    // Drag and drop
-    dropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropArea.style.borderColor = '#8b5cf6';
-        dropArea.style.background = 'rgba(139, 92, 246, 0.1)';
-    });
-
-    dropArea.addEventListener('dragleave', () => {
-        dropArea.style.borderColor = '';
-        dropArea.style.background = '';
-    });
-
-    dropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropArea.style.borderColor = '';
-        dropArea.style.background = '';
-
-        if (e.dataTransfer.files.length > 0) {
-            fileInput.files = e.dataTransfer.files;
-            fileNameDisplay.textContent = e.dataTransfer.files[0].name;
-            dropArea.style.borderColor = '#8b5cf6';
-            dropArea.style.background = 'rgba(139, 92, 246, 0.1)';
         }
     });
 
     // Upload Logic
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const title = document.getElementById('title').value;
         const subject = document.getElementById('subject').value;
         const author = document.getElementById('author').value;
         const file = fileInput.files[0];
 
-        if (!title || !subject) {
-            showNotification('Please fill in all required fields (Title, Subject).', 'error');
+        if (!title || !subject || !file) {
+            showNotification('Please fill all fields and select a file.', 'error');
             return;
         }
-
-        if (!file) {
-            showNotification('Please select a file to upload.', 'error');
-            return;
-        }
-
-        // Create FormData
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('subject', subject);
-        formData.append('author', author);
-        formData.append('file', file);
 
         try {
-            const response = await fetch(`${API_URL}/api/notes`, {
-                method: 'POST',
-                body: formData
-            });
+            // 1. Upload File to Supabase Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Math.random()}.${fileExt}`;
+            const filePath = `notes/${fileName}`;
 
-            const result = await response.json();
+            const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                .from('notes-bucket')
+                .upload(filePath, file);
 
-            if (result.success) {
-                showNotification('Note uploaded successfully! 🎉', 'success');
+            if (uploadError) throw uploadError;
 
-                // Reset form
-                uploadForm.reset();
-                fileNameDisplay.textContent = '';
-                dropArea.style = '';
-                closeUploadModal();
+            // 2. Get Public URL
+            const { data: { publicUrl } } = supabaseClient.storage
+                .from('notes-bucket')
+                .getPublicUrl(filePath);
 
-                // Refresh notes
-                await fetchNotes();
+            // 3. Save Record to Database
+            const { error: dbError } = await supabaseClient
+                .from('notes')
+                .insert([{
+                    title,
+                    subject,
+                    author: author || 'Anonymous',
+                    date: new Date().toISOString(),
+                    file_url: publicUrl,
+                    file_name: file.name
+                }]);
 
-                // Reset filter to 'All'
-                filterBtns.forEach(b => b.classList.remove('active'));
-                document.querySelector('[data-filter="all"]').classList.add('active');
-                renderNotes('all');
-            } else {
-                showNotification('Failed to upload note. Please try again.', 'error');
-            }
+            if (dbError) throw dbError;
+
+            showNotification('Note uploaded successfully! 🚀');
+            uploadForm.reset();
+            fileNameDisplay.textContent = '';
+            closeUploadModal();
+            await fetchNotes();
         } catch (error) {
-            console.error('Upload error:', error);
-            showNotification('Failed to upload note. Please check your connection.', 'error');
+            console.error('Upload failed:', error);
+            showNotification('Upload failed. Check Supabase config.', 'error');
         }
     });
 
-    // Initialize - Fetch notes from server
-    await fetchNotes();
-
-    // Auto-refresh every 5 seconds to sync with other devices
-    setInterval(fetchNotes, 5000);
+    // Initialize
+    if (supabaseClient) {
+        await fetchNotes();
+        setInterval(fetchNotes, 10000); // Polling every 10s
+    }
 });
