@@ -1,7 +1,5 @@
-// --- Supabase Integration ---
-const supabase = (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL')
-    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-    : null;
+// --- NoteSync Supabase Edition ---
+// The following script handles all cloud database and storage logic.
 
 document.addEventListener('DOMContentLoaded', async () => {
     // --- State Management ---
