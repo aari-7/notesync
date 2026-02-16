@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+env/
+venv/
+node_modules/
+# Keep notes.json and uploads/ for local, but usually you don't push them to cloud 
+# if you want a fresh start, or you do push them for initial data.
+# For now, let's keep them out so the cloud starts fresh.
+notes.json
+uploads/

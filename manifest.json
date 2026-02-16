@@ -1,0 +1,17 @@
+{
+  "name": "NoteSync - Physics & Chemistry",
+  "short_name": "NoteSync",
+  "description": "Share and discover Chemistry and Physics notes with NoteSync",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f0c29",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
