@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userProfile = document.getElementById('userProfile');
     const userAvatar = document.getElementById('userAvatar');
     const logoutBtn = document.getElementById('logoutBtn');
+    const searchInput = document.getElementById('searchInput');
+    const submitBtn = document.getElementById('submitBtn');
 
     // --- Subject Icon Mapping ---
     const subjectIcons = {
@@ -173,10 +175,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    function renderNotes(filter = 'all') {
+    function renderNotes(filter = 'all', searchTerm = '') {
         notesGrid.innerHTML = '';
 
-        const filteredNotes = notes.filter(note => filter === 'all' ? true : note.subject === filter);
+        let filteredNotes = notes.filter(note => filter === 'all' ? true : note.subject === filter);
+
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filteredNotes = filteredNotes.filter(note =>
+                note.title.toLowerCase().includes(term) ||
+                (note.description && note.description.toLowerCase().includes(term)) ||
+                (note.subject && note.subject.toLowerCase().includes(term)) ||
+                (note.author && note.author.toLowerCase().includes(term))
+            );
+        }
 
         if (filteredNotes.length === 0) {
             const emptyState = document.createElement('div');
@@ -301,8 +313,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
-            uploadBtn.innerHTML = '<ion-icon name="sync-outline" class="rotate"></ion-icon> Uploading...';
-            uploadBtn.disabled = true;
+            submitBtn.innerHTML = '<ion-icon name="sync-outline" class="rotate"></ion-icon> Uploading...';
+            submitBtn.disabled = true;
 
             // 1. Upload File to Supabase Storage
             const fileExt = file.name.split('.').pop();
@@ -345,10 +357,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Upload failed:', error);
             showNotification('Upload failed. ' + error.message, 'error');
         } finally {
-            uploadBtn.innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Upload';
-            uploadBtn.disabled = false;
+            submitBtn.innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Upload';
+            submitBtn.disabled = false;
         }
     });
+
+    // Search Logic
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+            renderNotes(activeFilter, e.target.value);
+        });
+    }
 
     // Initialize
     if (supabaseClient) {

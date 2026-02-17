@@ -221,7 +221,49 @@ body {
   color: var(--text-scnd);
   font-size: 1.2rem;
   max-width: 600px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.5rem;
+}
+
+/* Search Bar */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.5rem;
+  max-width: 600px;
+  width: 90%;
+  margin: 0 auto 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: var(--transition);
+}
+
+.search-container ion-icon {
+  font-size: 1.5rem;
+  color: var(--text-scnd);
+}
+
+.search-container input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  font-size: 1.1rem;
+  outline: none;
+  font-family: inherit;
+}
+
+.search-container input::placeholder {
+  color: var(--text-scnd);
+  opacity: 0.6;
+}
+
+.search-container:focus-within {
+  border-color: #8b5cf6;
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2);
 }
 
 .highlight.physics {

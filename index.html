@@ -73,6 +73,12 @@
             <p>Share and discover top-tier notes for <span class="highlight all">12 Subjects</span> including Sciences,
                 Humanities, and Math.</p>
 
+            <!-- Search Bar -->
+            <div class="search-container glass-panel">
+                <ion-icon name="search-outline"></ion-icon>
+                <input type="text" id="searchInput" placeholder="Search by title, subject, or author...">
+            </div>
+
             <div class="filter-controls glass-panel">
                 <div class="filter-row">
                     <button class="filter-btn active" data-filter="all">All</button>
@@ -167,7 +173,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn">Upload Note</button>
+                <button type="submit" id="submitBtn" class="submit-btn">Upload Note</button>
             </form>
         </div>
     </div>
