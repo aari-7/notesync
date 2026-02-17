@@ -193,7 +193,7 @@ body {
 /* Hero Section */
 .hero {
   text-align: center;
-  padding: 6rem 2rem 4rem;
+  padding: 3rem 2rem 2rem;
 }
 
 .hero h1 {
@@ -235,75 +235,78 @@ body {
 /* Filter Controls */
 .filter-controls {
   display: inline-block;
-  padding: 1.5rem 2rem;
+  padding: 0.75rem 1rem;
   background: var(--glass-bg);
   border: var(--glass-border);
-  border-radius: var(--radius);
-  backdrop-filter: blur(8px);
-  margin-top: 1rem;
+  border-radius: 50px;
+  backdrop-filter: blur(12px);
+  margin-top: 0.5rem;
 }
 
-.filter-group {
+.filter-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.filter-label {
-  font-size: 0.9rem;
+.filter-btn {
+  background: transparent;
+  border: none;
   color: var(--text-scnd);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.select-wrapper {
-  position: relative;
-  width: 280px;
-}
-
-.filter-select {
-  width: 100%;
-  padding: 0.85rem 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: white;
-  font-size: 1rem;
-  font-weight: 500;
-  appearance: none;
+  padding: 0.6rem 1.25rem;
+  border-radius: 50px;
   cursor: pointer;
+  font-weight: 500;
   transition: var(--transition);
+  font-size: 0.95rem;
+  white-space: nowrap;
 }
 
-.filter-select:hover {
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+}
+
+.filter-btn.active {
   background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+.divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 0 0.5rem;
 }
 
-.select-icon {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-  color: var(--text-scnd);
-  font-size: 1.25rem;
+.select-wrapper.compact {
+  width: 180px;
+}
+
+.select-wrapper.compact .filter-select {
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 50px;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.select-wrapper.compact .filter-select:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.select-wrapper.compact .select-icon {
+  right: 0.75rem;
+  font-size: 1rem;
 }
 
 /* Notes Grid */
 .notes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2.5rem;
-  padding: 2rem 6rem 6rem;
+  gap: 1.5rem;
+  padding: 1rem 4rem 4rem;
   max-width: 1600px;
   margin: 0 auto;
 }
@@ -703,13 +706,18 @@ textarea {
   }
 
   /* Dropdown width on mobile */
-  .select-wrapper {
-    width: 100%;
+  .filter-row {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
-  .filter-controls {
-    width: 90%;
-    padding: 1rem;
+  .select-wrapper.compact {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .divider {
+    display: none;
   }
 
   /* Modal Full Screen */

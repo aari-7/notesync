@@ -50,11 +50,11 @@
                 <ion-icon name="flask-outline" class="logo-icon"></ion-icon>
                 <span>NoteSync</span>
             </div>
-            <div class="nav-actions">
+            <div class="nav-actions" style="gap: 1.5rem;">
                 <button id="googleLoginBtn" class="secondary-btn">
-                    <ion-icon name="logo-google"></ion-icon> Login with Google
+                    <ion-icon name="logo-google"></ion-icon> Login
                 </button>
-                <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
+                <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
                     <img id="userAvatar" src="" alt="User"
                         style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #8b5cf6;">
                     <button id="logoutBtn" class="text-btn">Logout</button>
@@ -72,15 +72,18 @@
                 Humanities, and Math.</p>
 
             <div class="filter-controls glass-panel">
-                <div class="filter-group">
-                    <label for="subjectFilter" class="filter-label">Filter by Subject</label>
-                    <div class="select-wrapper">
+                <div class="filter-row">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="physics">Physics</button>
+                    <button class="filter-btn" data-filter="chemistry">Chemistry</button>
+                    <button class="filter-btn" data-filter="biology">Biology</button>
+                    <button class="filter-btn" data-filter="mathematics">Math</button>
+
+                    <div class="divider"></div>
+
+                    <div class="select-wrapper compact">
                         <select id="subjectFilter" class="filter-select">
-                            <option value="all">All Subjects</option>
-                            <option value="mathematics">Mathematics</option>
-                            <option value="biology">Biology</option>
-                            <option value="chemistry">Chemistry</option>
-                            <option value="physics">Physics</option>
+                            <option value="" disabled selected>More Subjects</option>
                             <option value="english_lang">English Language</option>
                             <option value="english_lit">English Literature</option>
                             <option value="geography">Geography</option>

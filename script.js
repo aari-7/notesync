@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const closeModal = document.querySelector('.close-modal');
     const uploadForm = document.getElementById('uploadForm');
     const subjectFilter = document.getElementById('subjectFilter');
+    const filterBtns = document.querySelectorAll('.filter-btn');
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
     const fileNameDisplay = document.getElementById('fileName');
@@ -249,8 +250,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('click', (e) => { if (e.target === uploadModal) closeUploadModal(); });
 
     // Filter Logic
+    if (filterBtns) {
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (subjectFilter) subjectFilter.selectedIndex = 0; // Reset "More" dropdown
+                renderNotes(btn.dataset.filter);
+            });
+        });
+    }
+
     if (subjectFilter) {
         subjectFilter.addEventListener('change', (e) => {
+            filterBtns.forEach(b => b.classList.remove('active')); // Reset primary buttons
             renderNotes(e.target.value);
         });
     }
