@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let notes = [];
 
     // --- DOM Elements ---
+    // --- DOM Elements ---
     const notesGrid = document.getElementById('notesGrid');
     const uploadBtn = document.getElementById('uploadBtn');
     const uploadModal = document.getElementById('uploadModal');
@@ -15,6 +16,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
     const fileNameDisplay = document.getElementById('fileName');
+    const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const userProfile = document.getElementById('userProfile');
+    const userAvatar = document.getElementById('userAvatar');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // --- Subject Icon Mapping ---
+    const subjectIcons = {
+        'mathematics': 'calculator',
+        'biology': 'leaf',
+        'chemistry': 'flask',
+        'physics': 'magnet',
+        'english_lang': 'language',
+        'english_lit': 'book',
+        'geography': 'earth',
+        'history': 'time',
+        'economics': 'stats-chart',
+        'comp_sci': 'code-working',
+        'business': 'briefcase',
+        'gp': 'globe'
+    };
 
     // --- Functions ---
 
@@ -24,8 +45,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     } else {
         console.warn('⚠️ Supabase URL/Key not configured. Please check index.html');
-        // Fallback to demo mode or alert user
     }
+
+    // --- Auth Logic ---
+    async function checkUser() {
+        if (!supabaseClient) return;
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        updateAuthUI(user);
+    }
+
+    function updateAuthUI(user) {
+        if (user) {
+            googleLoginBtn.style.display = 'none';
+            userProfile.style.display = 'flex';
+            userAvatar.src = user.user_metadata.avatar_url || 'https://via.placeholder.com/32';
+            uploadBtn.disabled = false;
+        } else {
+            googleLoginBtn.style.display = 'flex';
+            userProfile.style.display = 'none';
+            uploadBtn.disabled = true;
+            uploadBtn.title = 'Please login to upload notes';
+        }
+    }
+
+    googleLoginBtn.addEventListener('click', async () => {
+        const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        if (error) showNotification('Login failed: ' + error.message, 'error');
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) showNotification('Logout failed', 'error');
+        else window.location.reload();
+    });
 
     // Fetch notes from Supabase
     async function fetchNotes() {
@@ -78,7 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.downloadNote = (id) => {
         const note = notes.find(n => n.id === id);
         if (!note || !note.file_url) {
-            alert('File not found.');
+            showNotification('File not found.', 'error');
             return;
         }
         window.open(note.file_url, '_blank');
@@ -95,7 +152,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
-            // 1. Delete note from database
             const { error: dbError } = await supabaseClient
                 .from('notes')
                 .delete()
@@ -122,7 +178,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             emptyState.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; grid-column: 1 / -1;';
             emptyState.innerHTML = `
                 <ion-icon name="file-tray-outline" style="font-size: 64px; color: rgba(255,255,255,0.3); margin-bottom: 16px;"></ion-icon>
-                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">No notes found. Create your own!</p>
+                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">No notes found for this subject.</p>
             `;
             notesGrid.appendChild(emptyState);
             return;
@@ -131,20 +187,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         filteredNotes.forEach(note => {
             const card = document.createElement('article');
             card.className = 'note-card';
-            const icon = note.subject === 'chemistry' ? 'flask' : 'magnet';
+            const iconName = subjectIcons[note.subject] || 'document-text';
             const colorClass = note.subject;
 
             card.innerHTML = `
                 <div class="card-header">
                     <span class="subject-badge ${colorClass}">
-                        <ion-icon name="${icon}-outline" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
-                        ${note.subject}
+                        <ion-icon name="${iconName}-outline" style="vertical-align: middle; margin-right: 4px;"></ion-icon>
+                        ${note.subject.replace('_', ' ')}
                     </span>
                     <button class="delete-btn" onclick="deleteNote(${note.id}, '${note.title.replace(/'/g, "\\'")}')" title="Delete Note">
                         <ion-icon name="trash-outline"></ion-icon>
                     </button>
                 </div>
                 <h3 class="card-title">${note.title}</h3>
+                <p class="card-description">${note.description || 'No description provided.'}</p>
                 <div class="card-meta">
                     <span><ion-icon name="person-circle-outline"></ion-icon> ${note.author || 'Anonymous'}</span>
                     <span><ion-icon name="calendar-outline"></ion-icon> ${new Date(note.date).toLocaleDateString()}</span>
@@ -160,6 +217,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // --- Modal Logic ---
     const openModal = () => {
+        const { data: { user } } = supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (!session) {
+                showNotification('Please login to upload notes.', 'error');
+                return;
+            }
+        });
+
         uploadModal.style.display = 'flex';
         setTimeout(() => uploadModal.classList.add('active'), 10);
     };
@@ -199,8 +263,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         const title = document.getElementById('title').value;
         const subject = document.getElementById('subject').value;
+        const description = document.getElementById('description').value;
         const author = document.getElementById('author').value;
         const file = fileInput.files[0];
+
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        if (!user) {
+            showNotification('You must be logged in to upload.', 'error');
+            return;
+        }
+
+        // --- Basic Moderation ("Rubbish Prevention") ---
+        if (title.length < 5) {
+            showNotification('Title is too short (min 5 chars).', 'error');
+            return;
+        }
+        if (description.length < 10) {
+            showNotification('Description is too short (min 10 chars).', 'error');
+            return;
+        }
 
         if (!title || !subject || !file) {
             showNotification('Please fill all fields and select a file.', 'error');
@@ -208,6 +289,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
+            uploadBtn.innerHTML = '<ion-icon name="sync-outline" class="rotate"></ion-icon> Uploading...';
+            uploadBtn.disabled = true;
+
             // 1. Upload File to Supabase Storage
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random()}.${fileExt}`;
@@ -230,7 +314,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .insert([{
                     title,
                     subject,
-                    author: author || 'Anonymous',
+                    description,
+                    author: author || user.user_metadata.full_name || 'Anonymous',
+                    user_id: user.id,
                     date: new Date().toISOString(),
                     file_url: publicUrl,
                     file_name: file.name
@@ -245,13 +331,23 @@ document.addEventListener('DOMContentLoaded', async () => {
             await fetchNotes();
         } catch (error) {
             console.error('Upload failed:', error);
-            showNotification('Upload failed. Check Supabase config.', 'error');
+            showNotification('Upload failed. ' + error.message, 'error');
+        } finally {
+            uploadBtn.innerHTML = '<ion-icon name="cloud-upload-outline"></ion-icon> Upload';
+            uploadBtn.disabled = false;
         }
     });
 
     // Initialize
     if (supabaseClient) {
+        await checkUser();
         await fetchNotes();
-        setInterval(fetchNotes, 10000); // Polling every 10s
+
+        // Listener for auth state changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            updateAuthUI(session?.user);
+        });
+
+        setInterval(fetchNotes, 30000); // Polling every 30s
     }
 });

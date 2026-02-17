@@ -4,9 +4,15 @@
   --text-primary: #f8fafc;
   --text-scnd: #94a3b8;
   --accent-physics: #ef4444;
-  /* Red for Physics */
   --accent-chemistry: #3b82f6;
-  /* Blue for Chemistry */
+  --accent-math: #8b5cf6;
+  --accent-biology: #10b981;
+  --accent-english: #f59e0b;
+  --accent-humanities: #844d36;
+  --accent-cs: #06b6d4;
+  --accent-business: #64748b;
+  --accent-economics: #10b981;
+  --accent-gp: #f472b6;
   --glass-bg: rgba(255, 255, 255, 0.05);
   --glass-hover: rgba(255, 255, 255, 0.1);
   --glass-border: 1px solid rgba(255, 255, 255, 0.1);
@@ -152,6 +158,38 @@ body {
   box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
 }
 
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: var(--transition);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.text-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-scnd);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.text-btn:hover {
+  color: white;
+}
+
 /* Hero Section */
 .hero {
   text-align: center;
@@ -186,6 +224,11 @@ body {
 
 .highlight.chemistry {
   color: var(--accent-chemistry);
+  font-weight: 600;
+}
+
+.highlight.all {
+  color: var(--accent-math);
   font-weight: 600;
 }
 
@@ -273,6 +316,56 @@ body {
   background: rgba(59, 130, 246, 0.2);
   color: #93c5fd;
   border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.subject-badge.mathematics {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.subject-badge.biology {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.subject-badge.english_lang,
+.subject-badge.english_lit {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.subject-badge.geography,
+.subject-badge.history {
+  background: rgba(132, 77, 54, 0.2);
+  color: #dcbfa6;
+  border: 1px solid rgba(132, 77, 54, 0.3);
+}
+
+.subject-badge.comp_sci {
+  background: rgba(6, 182, 212, 0.2);
+  color: #67e8f9;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+
+.subject-badge.business {
+  background: rgba(100, 116, 139, 0.2);
+  color: #cbd5e1;
+  border: 1px solid rgba(100, 116, 139, 0.3);
+}
+
+.subject-badge.economics {
+  background: rgba(16, 185, 129, 0.2);
+  color: #a7f3d0;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.subject-badge.gp {
+  background: rgba(244, 114, 182, 0.2);
+  color: #f9a8d4;
+  border: 1px solid rgba(244, 114, 182, 0.3);
 }
 
 .delete-btn {
@@ -410,9 +503,36 @@ select {
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   border-color: #8b5cf6;
   background: rgba(0, 0, 0, 0.4);
+}
+
+textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: 0.2s;
+  min-height: 100px;
+  resize: vertical;
+}
+
+.card-description {
+  font-size: 0.95rem;
+  color: var(--text-scnd);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .file-drop-area {

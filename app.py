@@ -21,6 +21,7 @@ initial_data = [
         "id": 1,
         "title": "Organic Chemistry: Alkanes & Alkenes",
         "subject": "chemistry",
+        "description": "Comprehensive guide to hydrocarbon bonding and reactions.",
         "author": "Sarah Jenkins",
         "date": "2023-10-15T00:00:00Z",
         "fileUrl": None
@@ -29,6 +30,7 @@ initial_data = [
         "id": 2,
         "title": "Newtonian Mechanic Formulas",
         "subject": "physics",
+        "description": "Quick reference for F=ma, momentum, and energy conservation.",
         "author": "David Chen",
         "date": "2023-11-02T00:00:00Z",
         "fileUrl": None
@@ -37,6 +39,7 @@ initial_data = [
         "id": 3,
         "title": "Electrolysis Summary Sheet",
         "subject": "chemistry",
+        "description": "Electrolytic cell diagrams and half-equation practice.",
         "author": "Priya Patel",
         "date": "2023-12-05T00:00:00Z",
         "fileUrl": None
@@ -104,6 +107,7 @@ def add_note():
             "id": int(time.time() * 1000),
             "title": title,
             "subject": subject,
+            "description": request.form.get('description', ''),
             "author": author,
             "date": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
             "fileUrl": file_url,

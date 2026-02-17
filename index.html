@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NoteSync - Chemistry & Physics Notes</title>
-    <meta name="description" content="Share and discover Chemistry and Physics notes with NoteSync.">
+    <title>NoteSync - IGCSE Study Hub</title>
+    <meta name="description" content="Share and discover notes for all 11 IGCSE subjects with NoteSync.">
     <meta name="theme-color" content="#8b5cf6">
     <link rel="manifest" href="/manifest.json">
     <!-- Google Fonts -->
@@ -51,22 +51,40 @@
                 <span>NoteSync</span>
             </div>
             <div class="nav-actions">
+                <button id="googleLoginBtn" class="secondary-btn">
+                    <ion-icon name="logo-google"></ion-icon> Login with Google
+                </button>
+                <div id="userProfile" style="display: none; align-items: center; gap: 10px;">
+                    <img id="userAvatar" src="" alt="User"
+                        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #8b5cf6;">
+                    <button id="logoutBtn" class="text-btn">Logout</button>
+                </div>
                 <button id="uploadBtn" class="primary-btn">
-                    <ion-icon name="cloud-upload-outline"></ion-icon> Upload Notes
+                    <ion-icon name="cloud-upload-outline"></ion-icon> Upload
                 </button>
             </div>
         </nav>
 
         <!-- Hero Section -->
         <header class="hero">
-            <h1>Master Your <span class="gradient-text">Sciences</span></h1>
-            <p>Share and discover top-tier notes for <span class="highlight physics">Physics</span> and <span
-                    class="highlight chemistry">Chemistry</span>.</p>
+            <h1>Master Your <span class="gradient-text">IGCSEs</span></h1>
+            <p>Share and discover top-tier notes for <span class="highlight all">11 Subjects</span> including Sciences,
+                Humanities, and Math.</p>
 
             <div class="filter-bar glass-panel">
                 <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="physics">Physics</button>
+                <button class="filter-btn" data-filter="mathematics">Math</button>
+                <button class="filter-btn" data-filter="biology">Biology</button>
                 <button class="filter-btn" data-filter="chemistry">Chemistry</button>
+                <button class="filter-btn" data-filter="physics">Physics</button>
+                <button class="filter-btn" data-filter="english_lang">English Lang</button>
+                <button class="filter-btn" data-filter="english_lit">English Lit</button>
+                <button class="filter-btn" data-filter="geography">Geography</button>
+                <button class="filter-btn" data-filter="history">History</button>
+                <button class="filter-btn" data-filter="economics">Economics</button>
+                <button class="filter-btn" data-filter="comp_sci">CS</button>
+                <button class="filter-btn" data-filter="business">Business</button>
+                <button class="filter-btn" data-filter="gp">GP</button>
             </div>
         </header>
 
@@ -101,9 +119,25 @@
                     <label for="subject">Subject</label>
                     <select id="subject" required>
                         <option value="" disabled selected>Select Subject</option>
+                        <option value="mathematics">Mathematics</option>
+                        <option value="biology">Biology</option>
                         <option value="chemistry">Chemistry</option>
                         <option value="physics">Physics</option>
+                        <option value="english_lang">English Language</option>
+                        <option value="english_lit">English Literature</option>
+                        <option value="geography">Geography</option>
+                        <option value="history">History</option>
+                        <option value="economics">Economics</option>
+                        <option value="comp_sci">Computer Science</option>
+                        <option value="business">Business Studies</option>
+                        <option value="gp">Global Perspectives (GP)</option>
                     </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" placeholder="What parts of the syllabus does this cover? (min 10 chars)"
+                        required></textarea>
                 </div>
 
                 <div class="form-group">
