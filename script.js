@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- DOM Elements ---
     // --- DOM Elements ---
     const notesGrid = document.getElementById('notesGrid');
-    const uploadBtn = document.getElementById('uploadBtn');
+    const uploadFAB = document.getElementById('uploadFAB');
     const uploadModal = document.getElementById('uploadModal');
     const closeModal = document.querySelector('.close-modal');
     const uploadForm = document.getElementById('uploadForm');
@@ -60,12 +60,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             googleLoginBtn.style.display = 'none';
             userProfile.style.display = 'flex';
             userAvatar.src = user.user_metadata.avatar_url || 'https://via.placeholder.com/32';
-            uploadBtn.disabled = false;
         } else {
             googleLoginBtn.style.display = 'flex';
             userProfile.style.display = 'none';
-            uploadBtn.disabled = true;
-            uploadBtn.title = 'Please login to upload notes';
         }
     }
 
@@ -225,21 +222,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // --- Modal Logic ---
-    const openModal = () => {
-        const { data: { user } } = supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (!session) {
-                showNotification('Please login to upload notes.', 'error');
-                return;
+    if (uploadFAB) {
+        uploadFAB.addEventListener('click', async () => {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                uploadModal.style.display = 'flex';
+                setTimeout(() => uploadModal.classList.add('active'), 10);
+            } else {
+                showNotification('Please Sign In with Google to upload notes!', 'warning');
             }
         });
-
-        uploadModal.style.display = 'flex';
-        setTimeout(() => uploadModal.classList.add('active'), 10);
-    };
-
-    uploadBtn.addEventListener('click', openModal);
-    const fabUpload = document.getElementById('fabUpload');
-    if (fabUpload) fabUpload.addEventListener('click', openModal);
+    }
 
     function closeUploadModal() {
         uploadModal.classList.remove('active');

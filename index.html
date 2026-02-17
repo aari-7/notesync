@@ -16,8 +16,13 @@
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
+    <!-- Floating Action Button -->
+    <button id="uploadFAB" class="fab" title="Upload Note">
+        <ion-icon name="add-outline"></ion-icon>
+    </button>
+
     <!-- Supabase SDK (Production Ready) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         // Supabase Configuration - Live Production Keys
         const SUPABASE_URL = 'https://btxdiuolhqeunojwiapi.supabase.co';
@@ -50,18 +55,15 @@
                 <ion-icon name="flask-outline" class="logo-icon"></ion-icon>
                 <span>NoteSync</span>
             </div>
-            <div class="nav-actions" style="gap: 1.5rem;">
+            <div class="nav-actions" style="gap: 2rem;">
                 <button id="googleLoginBtn" class="secondary-btn">
                     <ion-icon name="logo-google"></ion-icon> Login
                 </button>
-                <div id="userProfile" style="display: none; align-items: center; gap: 12px;">
+                <div id="userProfile" style="display: none; align-items: center; gap: 15px;">
                     <img id="userAvatar" src="" alt="User"
                         style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid #8b5cf6;">
                     <button id="logoutBtn" class="text-btn">Logout</button>
                 </div>
-                <button id="uploadBtn" class="primary-btn">
-                    <ion-icon name="cloud-upload-outline"></ion-icon> Upload
-                </button>
             </div>
         </nav>
 
@@ -93,7 +95,6 @@
                             <option value="business">Business Studies</option>
                             <option value="gp">Global Perspectives (GP)</option>
                         </select>
-                        <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
                     </div>
                 </div>
             </div>
