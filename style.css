@@ -193,7 +193,7 @@ body {
 /* Hero Section */
 .hero {
   text-align: center;
-  padding: 4rem 1rem 2rem;
+  padding: 6rem 2rem 4rem;
 }
 
 .hero h1 {
@@ -232,41 +232,79 @@ body {
   font-weight: 600;
 }
 
-/* Filter Bar */
-.filter-bar {
-  display: inline-flex;
-  gap: 1rem;
-  padding: 0.5rem;
+/* Filter Controls */
+.filter-controls {
+  display: inline-block;
+  padding: 1.5rem 2rem;
   background: var(--glass-bg);
   border: var(--glass-border);
-  border-radius: 50px;
+  border-radius: var(--radius);
   backdrop-filter: blur(8px);
+  margin-top: 1rem;
 }
 
-.filter-btn {
-  background: transparent;
-  border: none;
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-label {
+  font-size: 0.9rem;
   color: var(--text-scnd);
-  padding: 0.5rem 1.5rem;
-  border-radius: 50px;
-  cursor: pointer;
   font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.select-wrapper {
+  position: relative;
+  width: 280px;
+}
+
+.filter-select {
+  width: 100%;
+  padding: 0.85rem 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  appearance: none;
+  cursor: pointer;
   transition: var(--transition);
 }
 
-.filter-btn:hover,
-.filter-btn.active {
+.filter-select:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: white;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.select-icon {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--text-scnd);
+  font-size: 1.25rem;
 }
 
 /* Notes Grid */
 .notes-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 2rem 4rem;
-  max-width: 1400px;
+  gap: 2.5rem;
+  padding: 2rem 6rem 6rem;
+  max-width: 1600px;
   margin: 0 auto;
 }
 
@@ -660,8 +698,18 @@ textarea {
   /* Grid to List */
   .notes-grid {
     grid-template-columns: 1fr;
+    padding: 1.5rem;
+    gap: 1.5rem;
+  }
+
+  /* Dropdown width on mobile */
+  .select-wrapper {
+    width: 100%;
+  }
+
+  .filter-controls {
+    width: 90%;
     padding: 1rem;
-    gap: 1rem;
   }
 
   /* Modal Full Screen */

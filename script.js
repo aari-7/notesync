@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const uploadModal = document.getElementById('uploadModal');
     const closeModal = document.querySelector('.close-modal');
     const uploadForm = document.getElementById('uploadForm');
-    const filterBtns = document.querySelectorAll('.filter-btn');
+    const subjectFilter = document.getElementById('subjectFilter');
     const fileInput = document.getElementById('fileInput');
     const dropArea = document.getElementById('dropArea');
     const fileNameDisplay = document.getElementById('fileName');
@@ -75,7 +75,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 redirectTo: window.location.origin
             }
         });
-        if (error) showNotification('Login failed: ' + error.message, 'error');
+
+        if (error) {
+            console.error('OAuth error:', error);
+            if (error.message.includes('not enabled')) {
+                showNotification('Google Auth is NOT enabled in your Supabase dashboard yet!', 'error');
+            } else {
+                showNotification('Login failed: ' + error.message, 'error');
+            }
+        }
     });
 
     logoutBtn.addEventListener('click', async () => {
@@ -241,13 +249,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.addEventListener('click', (e) => { if (e.target === uploadModal) closeUploadModal(); });
 
     // Filter Logic
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderNotes(btn.dataset.filter);
+    if (subjectFilter) {
+        subjectFilter.addEventListener('change', (e) => {
+            renderNotes(e.target.value);
         });
-    });
+    }
 
     // File Input Logic
     dropArea.addEventListener('click', () => fileInput.click());

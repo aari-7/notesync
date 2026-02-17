@@ -71,20 +71,28 @@
             <p>Share and discover top-tier notes for <span class="highlight all">11 Subjects</span> including Sciences,
                 Humanities, and Math.</p>
 
-            <div class="filter-bar glass-panel">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="mathematics">Math</button>
-                <button class="filter-btn" data-filter="biology">Biology</button>
-                <button class="filter-btn" data-filter="chemistry">Chemistry</button>
-                <button class="filter-btn" data-filter="physics">Physics</button>
-                <button class="filter-btn" data-filter="english_lang">English Lang</button>
-                <button class="filter-btn" data-filter="english_lit">English Lit</button>
-                <button class="filter-btn" data-filter="geography">Geography</button>
-                <button class="filter-btn" data-filter="history">History</button>
-                <button class="filter-btn" data-filter="economics">Economics</button>
-                <button class="filter-btn" data-filter="comp_sci">CS</button>
-                <button class="filter-btn" data-filter="business">Business</button>
-                <button class="filter-btn" data-filter="gp">GP</button>
+            <div class="filter-controls glass-panel">
+                <div class="filter-group">
+                    <label for="subjectFilter" class="filter-label">Filter by Subject</label>
+                    <div class="select-wrapper">
+                        <select id="subjectFilter" class="filter-select">
+                            <option value="all">All Subjects</option>
+                            <option value="mathematics">Mathematics</option>
+                            <option value="biology">Biology</option>
+                            <option value="chemistry">Chemistry</option>
+                            <option value="physics">Physics</option>
+                            <option value="english_lang">English Language</option>
+                            <option value="english_lit">English Literature</option>
+                            <option value="geography">Geography</option>
+                            <option value="history">History</option>
+                            <option value="economics">Economics</option>
+                            <option value="comp_sci">Computer Science</option>
+                            <option value="business">Business Studies</option>
+                            <option value="gp">Global Perspectives (GP)</option>
+                        </select>
+                        <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
+                    </div>
+                </div>
             </div>
         </header>
 
