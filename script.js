@@ -4,6 +4,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     // --- State Management ---
     let notes = [];
+    let currentView = 'note'; // 'note' or 'test'
 
     // --- DOM Elements ---
     // --- DOM Elements ---
@@ -23,6 +24,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const logoutBtn = document.getElementById('logoutBtn');
     const searchInput = document.getElementById('searchInput');
     const submitBtn = document.getElementById('submitBtn');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const docTypeInput = document.getElementById('docType');
 
     // --- Subject Icon Mapping ---
     const subjectIcons = {
@@ -114,6 +117,23 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Tab Switching Logic
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentView = btn.dataset.view;
+
+            // Reset filters when switching views
+            filterBtns.forEach(b => b.classList.remove('active'));
+            if (filterBtns[0]) filterBtns[0].classList.add('active'); // "All" button
+            if (subjectFilter) subjectFilter.selectedIndex = 0;
+            if (searchInput) searchInput.value = '';
+
+            renderNotes();
+        });
+    });
+
     // Show notification
     function showNotification(message, type = 'success') {
         const notification = document.createElement('div');
@@ -178,8 +198,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     function renderNotes(filter = 'all', searchTerm = '') {
         notesGrid.innerHTML = '';
 
-        let filteredNotes = notes.filter(note => filter === 'all' ? true : note.subject === filter);
+        // First filter by current view (note vs test)
+        // Assume existing notes without a 'type' property are 'note' (backward compatibility)
+        let filteredNotes = notes.filter(note => {
+            const type = note.type || 'note';
+            return type === currentView;
+        });
 
+        // Then filter by subject
+        if (filter !== 'all') {
+            filteredNotes = filteredNotes.filter(note => note.subject === filter);
+        }
+
+        // Finally filter by search term
         if (searchTerm) {
             const term = searchTerm.toLowerCase();
             filteredNotes = filteredNotes.filter(note =>
@@ -194,9 +225,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             const emptyState = document.createElement('div');
             emptyState.className = 'empty-state';
             emptyState.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; grid-column: 1 / -1;';
+            const emptyMsg = currentView === 'note' ? 'No notes found.' : 'No tests found.';
             emptyState.innerHTML = `
                 <ion-icon name="file-tray-outline" style="font-size: 64px; color: rgba(255,255,255,0.3); margin-bottom: 16px;"></ion-icon>
-                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">No notes found for this subject.</p>
+                <p style="color: rgba(255,255,255,0.6); font-size: 18px;">${emptyMsg}</p>
             `;
             notesGrid.appendChild(emptyState);
             return;
@@ -226,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </div>
                 ${note.file_url ? `
                 <button class="download-btn" onclick="downloadNote(${note.id})">
-                    <ion-icon name="cloud-download-outline"></ion-icon> Download Note
+                    <ion-icon name="cloud-download-outline"></ion-icon> Download ${currentView === 'note' ? 'Note' : 'Test'}
                 </button>` : ''}
             `;
             notesGrid.appendChild(card);
@@ -287,6 +319,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         e.preventDefault();
         const title = document.getElementById('title').value;
         const subject = document.getElementById('subject').value;
+        const docType = document.getElementById('docType').value;
         const description = document.getElementById('description').value;
         const author = document.getElementById('author').value;
         const file = fileInput.files[0];
@@ -338,6 +371,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 .insert([{
                     title,
                     subject,
+                    type: docType,
                     description,
                     author: author || user.user_metadata.full_name || 'Anonymous',
                     user_id: user.id,
@@ -348,7 +382,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (dbError) throw dbError;
 
-            showNotification('Note uploaded successfully! 🚀');
+            showNotification(`${docType.charAt(0).toUpperCase() + docType.slice(1)} uploaded successfully! 🚀`);
             uploadForm.reset();
             fileNameDisplay.textContent = '';
             closeUploadModal();
