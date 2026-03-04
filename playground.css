@@ -509,14 +509,13 @@ select:focus {
   }
 
   .modal-content {
-    width: 100%;
-    height: 85vh;
-    /* Almost full height */
-    max-width: none;
-    border-radius: 20px 20px 0 0;
-    border-bottom: none;
-    padding: 2rem 1.5rem;
+    width: 95%;
+    height: auto;
+    max-height: 85vh;
+    border-radius: 20px;
+    padding: 2.5rem 1.5rem 1.5rem;
     overflow-y: auto;
+    margin-top: 5vh;
     animation: slideUp 0.3s ease-out forwards;
   }
 
@@ -533,15 +532,17 @@ select:focus {
   }
 
   .close-modal {
-    top: 1rem;
-    right: 1.5rem;
+    top: 0.75rem;
+    right: 0.75rem;
     background: rgba(255, 255, 255, 0.1);
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+    z-index: 10;
+    cursor: pointer;
   }
 }

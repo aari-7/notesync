@@ -283,7 +283,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => uploadModal.style.display = 'none', 300);
     }
 
-    closeModal.addEventListener('click', closeUploadModal);
+    if (closeModal) {
+        closeModal.addEventListener('click', closeUploadModal);
+    }
+
+    const mobileFAB = document.getElementById('fabUpload');
+    if (mobileFAB) {
+        mobileFAB.addEventListener('click', async () => {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            if (user) {
+                uploadModal.style.display = 'flex';
+                setTimeout(() => uploadModal.classList.add('active'), 10);
+            } else {
+                showNotification('Please Sign In with Google to upload notes!', 'warning');
+            }
+        });
+    }
     window.addEventListener('click', (e) => { if (e.target === uploadModal) closeUploadModal(); });
 
     // Filter Logic
