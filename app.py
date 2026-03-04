@@ -8,8 +8,13 @@ app = Flask(__name__)
 CORS(app)
 
 # Configuration for Cloud
-UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
-NOTES_FILE = os.environ.get('NOTES_FILE', 'notes.json')
+if os.environ.get('VERCEL'):
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', '/tmp/uploads')
+    NOTES_FILE = os.environ.get('NOTES_FILE', '/tmp/notes.json')
+else:
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
+    NOTES_FILE = os.environ.get('NOTES_FILE', 'notes.json')
+    
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'GOAT_SYNC_2026') # Your secret key!
 
 if not os.path.exists(UPLOAD_FOLDER):
